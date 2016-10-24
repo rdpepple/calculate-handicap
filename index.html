@@ -1,0 +1,139 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>USGA GHIN Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+.left {
+    float: left;
+    width: 25%;
+    border: 3px solid #73AD21;
+    padding: 10px;
+}
+.right {
+    float: right;
+    width: 70%;
+    border: 3px solid #73AD21;
+    padding: 10px;
+}
+.handicap_text {
+    color: green;
+    font-family: arial;
+    font-size: xx-large;
+    font-weight: bold;
+}
+.score_table_used_row {
+    background-color: green;
+    color:white;
+    text-align: center;
+}
+.score_table_unused_row {
+    text-align: center;
+}
+</style>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+<script src="handicap.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<h2>Golf Handicap Calculator</h2>
+    
+<div class="left">
+    <p style:noborder>Select golf couse from history list:</p>
+    <form id="score_entry" name="score_entry" action="process_score.pl" method="GET">
+     <select id="gc_list" name="gc_list" onchange="populateFormWithSavedCourse()">
+     </select><br> 
+
+     New Golf Course ID:<br>
+     <input id="gc_name" name="gc_name" type="text" size="40" value=""><br>
+    
+     Date Played:<br>
+     <input id="datepicker" name="date" type="text"/><br>
+
+      Slope:<br>
+     <input id="gc_slope" name="gc_slope" type="text"><br>
+    
+     Rating:<br>
+     <input id="gc_rating" name="gc_rating" type="text"><br>
+    
+     Score:<br>
+     <input id="score" name="score" type="text"><br>
+ 
+     <input type="button" id="clear" name="clear" value="Clear Form" onclick="clearForm();">       
+     <input type="button" id="post_score" name="post_score" value="Post Score" onclick="postScoreToDB();">       
+    </form>
+</div>
+
+<script type="text/javascript">
+    
+// build golf course selection list
+   var gclist_xhttp;
+   gclist_xhttp = new XMLHttpRequest();
+   gclist_xhttp.onreadystatechange = function() {
+       if (this.readyState == 4 && this.status == 200) {
+           document.getElementById("gc_list").innerHTML = this.responseText;
+       }
+   }
+   gclist_xhttp.open("GET", "get_courses.php", true);
+   gclist_xhttp.send();
+
+//    $("#post_score").click(function() {
+//        $("#score_entry").submit(); 
+//    });
+
+</script>
+
+<div class="right">
+<p>GHIN #: 0478099</p>
+<p>Calculated Handicap:</p>
+<p id="handicap_result" name="handicap_result" class=handicap_text></p>
+
+<table id="score_table" width="100%"></table>
+
+</div>
+
+<script type="text/javascript">
+
+// Script to get score data calculate the handicap display
+   var ghin_xhttp;
+   ghin_xhttp = new XMLHttpRequest();
+   ghin_xhttp.onreadystatechange = function() {
+       if (this.readyState == 4 && this.status == 200) {
+           document.getElementById("handicap_result").innerHTML = this.responseText;
+       }
+   }
+   ghin_xhttp.open("GET", "calculate_ghin.php", true);
+   ghin_xhttp.send();
+
+</script>
+
+<script type="text/javascript">
+
+// Script to get score data display the score history data, including scores used for GHIN calculation
+   var scores_xhttp;
+   scores_xhttp = new XMLHttpRequest();
+   scores_xhttp.onreadystatechange = function() {
+       if (this.readyState == 4 && this.status == 200) {
+           document.getElementById("score_table").innerHTML = this.responseText;
+       }
+   }
+   scores_xhttp.open("GET", "init_scores.php", true);
+   scores_xhttp.send();
+
+</script>
+
+<script>
+$( "#datepicker" ).datepicker();
+</script>
+</body>
+</html>
